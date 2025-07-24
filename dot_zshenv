@@ -4,18 +4,18 @@
 # EXPORT ENVIRONMENT VARIABLE #
 ###############################
 
-export DOTFILES="$HOME/.dotfiles"
-export WORKSPACE="$HOME/workspace"
+export DOTSPATH=~/.local/share/chezmoi
+# export WORKSPACE="$HOME/workspace"
 
 # editor
 export EDITOR="nvim"
 export VISUAL="nvim"
 
 # zsh
-export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
-export HISTFILE="$ZDOTDIR/.zhistory"    # History filepath
-export HISTSIZE=10000                   # Maximum events for internal history
-export SAVEHIST=10000                   # Maximum events in history file
+# export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+# export HISTFILE="$ZDOTDIR/.zhistory"    # History filepath
+# export HISTSIZE=10000                   # Maximum events for internal history
+# export SAVEHIST=10000                   # Maximum events in history file
 
 # Man pages
 export MANPAGER='nvim +Man!'

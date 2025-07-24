@@ -1,0 +1,134 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = "${custom.iterm_prompt_mark}${custom.lambda}${custom.path}$all${custom.iterm_prompt_end}"
+
+# Inserts a blank line between shell prompts
+add_newline = true
+
+palette = 'one_dark'
+
+[custom.lambda]
+format = '[λ](blue bold) '
+when = true
+
+# ~/.config/starship.toml
+
+# Add this new custom module
+[custom.path]
+description = "Current path with colored separators"
+style = ""
+shell = "zsh"
+when = 'test "$STARSHIP_SHELL" = "zsh"'
+command = '''
+  local slash="%F{cyan}/%f"; print -Pn "${${PWD/#$HOME/~}//\//$slash}"
+  '''
+
+[custom.iterm_prompt_mark]
+when = '[ "$TERM_PROGRAM" = "iTerm.app" ]'
+format = "\u001b\\]133;A\u0007"
+shell = "sh"
+disabled = false
+
+[custom.iterm_prompt_end]
+when = '[ "$TERM_PROGRAM" = "iTerm.app" ]'
+format = "\u001b\\]133;B\u0007"
+shell = "sh"
+disabled = false
+
+[directory]
+disabled = true
+# truncate_to_repo = false
+truncation_length = 100
+
+[aws]
+symbol = ""
+
+[git_branch]
+symbol = ""
+
+[git_status]
+disabled = true
+
+# format = "([\\[$all_status$ahead_behind\\]]($style) )\n"
+style = "red"
+stashed = '($count stashed)'
+ahead = '($count ahead)'
+behind = '($count behind)'
+up_to_date = ""
+diverged = "diverged "
+conflicted = '($count conflicted)'
+deleted = '($count deleted)'
+renamed = '($count renamed)'
+modified = '($count modified)'
+staged = '($count staged)'
+untracked = '($count untracked)'
+typechanged = ""
+ignore_submodules = false
+use_git_executable = false
+
+[kubernetes]
+disabled = false
+format = '[$symbol$context( \($namespace\))]($style) '
+symbol = ""
+
+[palettes.one_dark]
+mono0 = '#d7dae0'         # terminal white, from the One Dark Pro VSCode theme.
+mono1 = '#abb2bf'         # syntax_fg.
+mono2 = '#828997'
+mono3 = '#5c6370'
+mono4 = '#3f4451'         # terminal black, from the One Dark Pro VSCode theme.
+color_red0 = '#e06c75'
+color_red1 = '#be5046'
+color_green = '#98c379'
+color_yellow = '#e5c07b'
+color_blue = '#61afef'
+color_purple = '#c678dd'
+color_cyan = '#56b6c2'
+color_orange = '#d19a66'
+syntax_fg = '#abb2bf'
+syntax_bg = '#282c34'
+color_bg2 = '#665c54'
+syntax_gutter = '#647382'
+syntax_accent = '#528cff'
+
+[battery]
+full_symbol = "• "
+charging_symbol = "⇡ "
+discharging_symbol = "⇣ "
+unknown_symbol = "❓ "
+empty_symbol = "❗ "
+
+[erlang]
+symbol = "ⓔ "
+
+[nodejs]
+symbol = "[node](bold green) "
+disabled = true
+
+[pulumi]
+symbol = "🧊 "
+
+[typst]
+symbol = "t "
+
+[golang]
+disabled = true
+
+[python]
+disabled = true
+
+[terraform]
+disabled = true
+
+[buf]
+disabled = true
+
+[nix_shell]
+disabled = true
+
+[gradle]
+disabled = true
+
+[java]
+disabled = true

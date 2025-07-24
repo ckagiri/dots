@@ -1,0 +1,229 @@
+command_exists() {
+  (( $+commands[$1]))
+}
+
+function_exists() {
+  (( $+functions[$1]))
+}
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+# Force homebrew to the end
+# This prioritizes zsh's built-in completions which are usually very rich
+# Example: https://github.com/orgs/Homebrew/discussions/2797
+# Source: https://github.com/orgs/Homebrew/discussions/2797#discussioncomment-12924139
+#
+# git's: https://github.com/git/git/blob/master/contrib/completion/git-completion.zsh
+# Built-in: https://github.com/zsh-users/zsh/blob/master/Completion/Unix/Command/_git
+fpath=(${fpath[@]:1} $fpath[1])
+
+source $DOTSPATH/zsh/path.zsh
+
+# if TMUX_FZF is set, we're only interested in loading the fzf functions
+# everything else will just slow us down
+if [[ -n "$TMUX_FZF" ]]; then
+  source $DOTSPATH/zsh/fzf.zsh
+  return
+fi
+
+# zinit
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+[ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
+[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+source "${ZINIT_HOME}/zinit.zsh"
+
+# Remove the zinit alias
+# There doesn't seem to be an official way of doing this,
+# hoping this doesn't break anything.
+# https://github.com/zdharma-continuum/zinit/discussions/312
+# unalias zi
+
+fpath=(
+  "$HOME/.zsh/comp"
+  "$DOTSPATH/zsh/comp"
+  "$DOTSPATH/zsh/cache/completions"
+  "$ZSH_CACHE_DIR/completions"
+  "${fpath[@]}"
+)
+
+autoload -U compinit bashcompinit promptinit colors select-word-style
+select-word-style normal # bash
+compinit -i
+bashcompinit
+promptinit
+colors
+
+# history
+export HISTFILE="$HOME/.zsh_history"
+export HISTSIZE=10000
+export HISTORY_IGNORE=""
+export SAVEHIST=$HISTSIZE
+
+setopt inc_append_history
+setopt hist_ignore_space
+setopt append_history
+setopt hist_ignore_dups
+setopt share_history
+setopt extendedglob
+setopt hist_reduce_blanks
+setopt hist_verify
+setopt no_complete_aliases
+setopt auto_pushd
+setopt cdable_vars
+
+# env vars
+export EDITOR=vim
+export VISUAL=vim
+
+# eval "$(gdircolors ~/.dircolors)"
+# Remember to run build-fzf-tab-module
+export LS_COLORS='no=00:rs=0:fi=00:di=01;34:ln=36:mh=04;36:pi=04;01;36:so=04;33:do=04;01;36:bd=01;33:cd=33:or=31:mi=01;37;41:ex=01;36:su=01;04;37:sg=01;04;37:ca=01;37:tw=01;37;44:ow=01;04;34:st=04;37;44:*.7z=01;32:*.ace=01;32:*.alz=01;32:*.arc=01;32:*.arj=01;32:*.bz=01;32:*.bz2=01;32:*.cab=01;32:*.cpio=01;32:*.deb=01;32:*.dz=01;32:*.ear=01;32:*.gz=01;32:*.jar=01;32:*.lha=01;32:*.lrz=01;32:*.lz=01;32:*.lz4=01;32:*.lzh=01;32:*.lzma=01;32:*.lzo=01;32:*.rar=01;32:*.rpm=01;32:*.rz=01;32:*.sar=01;32:*.t7z=01;32:*.tar=01;32:*.taz=01;32:*.tbz=01;32:*.tbz2=01;32:*.tgz=01;32:*.tlz=01;32:*.txz=01;32:*.tz=01;32:*.tzo=01;32:*.tzst=01;32:*.war=01;32:*.xz=01;32:*.z=01;32:*.Z=01;32:*.zip=01;32:*.zoo=01;32:*.zst=01;32:*.aac=32:*.au=32:*.flac=32:*.m4a=32:*.mid=32:*.midi=32:*.mka=32:*.mp3=32:*.mpa=32:*.mpeg=32:*.mpg=32:*.ogg=32:*.opus=32:*.ra=32:*.wav=32:*.3des=01;35:*.aes=01;35:*.gpg=01;35:*.pgp=01;35:*.doc=32:*.docx=32:*.dot=32:*.odg=32:*.odp=32:*.ods=32:*.odt=32:*.otg=32:*.otp=32:*.ots=32:*.ott=32:*.pdf=32:*.ppt=32:*.pptx=32:*.xls=32:*.xlsx=32:*.app=01;36:*.bat=01;36:*.btm=01;36:*.cmd=01;36:*.com=01;36:*.exe=01;36:*.reg=01;36:*~=02;37:*.bak=02;37:*.BAK=02;37:*.log=02;37:*.log=02;37:*.old=02;37:*.OLD=02;37:*.orig=02;37:*.ORIG=02;37:*.swo=02;37:*.swp=02;37:*.bmp=32:*.cgm=32:*.dl=32:*.dvi=32:*.emf=32:*.eps=32:*.gif=32:*.jpeg=32:*.jpg=32:*.JPG=32:*.mng=32:*.pbm=32:*.pcx=32:*.pgm=32:*.png=32:*.PNG=32:*.ppm=32:*.pps=32:*.ppsx=32:*.ps=32:*.svg=32:*.svgz=32:*.tga=32:*.tif=32:*.tiff=32:*.xbm=32:*.xcf=32:*.xpm=32:*.xwd=32:*.xwd=32:*.yuv=32:*.anx=32:*.asf=32:*.avi=32:*.axv=32:*.flc=32:*.fli=32:*.flv=32:*.gl=32:*.m2v=32:*.m4v=32:*.mkv=32:*.mov=32:*.MOV=32:*.mp4=32:*.mpeg=32:*.mpg=32:*.nuv=32:*.ogm=32:*.ogv=32:*.ogx=32:*.qt=32:*.rm=32:*.rmvb=32:*.swf=32:*.vob=32:*.webm=32:*.wmv=32:';
+
+source $DOTSPATH/zsh/completions.zsh
+source $DOTSPATH/zsh/zle.zsh
+source $DOTSPATH/zsh/fzf.zsh
+
+source $DOTSPATH/zsh/functions.zsh
+source $DOTSPATH/zsh/alias.zsh
+
+[[ "$OSTYPE" == darwin* ]] && source $DOTSPATH/zsh/macos.zsh
+
+# Note that if a plugin is marked with `wait` it will be loaded asynchronously (deferred)
+# This means the following is possible:
+# - Something you thought you set as the final value gets overwritten by the plugin once it loads
+# - A dependency required by subsequent configuration you thought was loaded was not loaded
+# zinit ice wait silent
+# zinit light undg/zsh-nvm-lazy-load
+
+zinit ice wait silent
+zinit light hlissner/zsh-autopair
+
+# Can't wait on this one.
+zinit light qoomon/zsh-lazyload
+
+zinit ice wait silent
+zinit light kutsan/zsh-system-clipboard
+
+zinit ice wait silent as"completion"
+zinit snippet 'https://github.com/docker/cli/blob/master/contrib/completion/zsh/_docker'
+
+# zinit snippet OMZP::docker
+zinit ice wait silent
+zinit snippet OMZP::command-not-found
+
+export DISABLE_FZF_KEY_BINDINGS="true"
+zinit snippet OMZP::fzf
+# For newer fzf, it is eval fzf --zsh, which unconditionally sets bindings.
+bindkey -M vicmd "^R" redo
+
+zinit ice wait silent
+zinit snippet OMZP::chezmoi
+
+zinit ice wait silent
+zinit snippet OMZP::colored-man-pages
+
+zinit ice wait silent
+zinit snippet OMZP::kubectl
+
+zinit ice wait silent
+zinit snippet OMZP::rust
+
+zinit ice wait silent
+zinit snippet OMZP::argocd
+
+zinit ice wait silent
+zinit snippet OMZP::volta
+
+zinit ice wait silent
+zinit snippet OMZP::uv
+
+zinit ice wait silent
+zinit snippet OMZP::tailscale
+
+zinit ice wait silent
+zinit snippet OMZP::sudo
+
+zinit ice wait silent
+zinit snippet OMZP::ssh
+
+zstyle ':omz:plugins:nvm' lazy yes
+zstyle ':omz:plugins:nvm' lazy-cmd eslint prettier typescript
+
+zinit ice wait silent
+zinit snippet OMZP::nvm
+
+zinit ice wait silent
+zinit snippet OMZP::mvn
+
+zinit ice wait silent
+zinit snippet OMZP::gradle
+
+zinit ice wait silent
+zinit snippet OMZP::gnu-utils
+
+# lazyload kubectl -- 'source <(kubectl completion zsh)'
+
+zinit ice wait silent
+zinit snippet OMZP::sdk
+
+export JAVA_HOME=$HOME/.sdkman/candidates/java/current
+
+zinit ice wait silent
+zinit light zsh-users/zsh-completions
+
+zinit ice wait silent
+zinit light zsh-users/zsh-syntax-highlighting
+
+zinit ice pick"init.sh"
+zinit light babarot/enhancd
+source $DOTSPATH/zsh/enhancd.zsh
+
+# export ZSH_TAB_TITLE_CONCAT_FOLDER_PROCESS=true
+export ZSH_WINDOW_TITLE_DIRECTORY_DEPTH=1
+zinit ice wait silent
+zinit light olets/zsh-window-title
+
+source $DOTSPATH/zsh/highlight.zsh
+
+# Setting --cmd cd can break scripts!
+# zoxide will run instead and just say 'no match found'.
+# This was discovered with the fzf-tab `build-fzf-tab-module`
+eval "$(zoxide init zsh)"
+
+eval "$(atuin init zsh --disable-up-arrow)"
+eval "$(starship init zsh)"
+
+zinit ice wait silent
+zinit light Aloxaf/fzf-tab
+
+# This script was automatically generated by the broot program
+# eval "$(broot --print-shell-function zsh)"
+#
+# More information can be found in https://github.com/Canop/broot
+# This function starts broot and executes the command
+# it produces, if any.
+# It's needed because some shell commands, like `cd`,
+# have no useful effect if executed in a subshell.
+function br {
+    local cmd cmd_file code
+    cmd_file=$(mktemp)
+    if broot --outcmd "$cmd_file" "$@"; then
+        cmd=$(<"$cmd_file")
+        command rm -f "$cmd_file"
+        eval "$cmd"
+    else
+        code=$?
+        command rm -f "$cmd_file"
+        return "$code"
+    fi
+}
+
+if [[ -f ~/.zsh.local ]]; then
+  source ~/.zsh.local
+fi
+
+[[ -n "$ENABLE_ZPROF" ]] && zprof
+
+if [[ -n "$ENABLE_XTRACE" ]]; then
+  unsetopt XTRACE
+  exec 2>&3 3>&-
+fi

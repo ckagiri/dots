@@ -164,12 +164,8 @@ zinit ice wait silent
 zinit snippet OMZP::gnu-utils
 
 export SDKMAN_DIR="$HOME/.sdkman"
-lazyload sdk -- 'source "$SDKMAN_DIR/bin/sdkman-init.sh"'
+zinit light ptavares/zsh-sdkman
 
-zinit ice wait silent
-zinit snippet OMZP::sdk
-
-export JAVA_HOME=$HOME/.sdkman/candidates/java/current
 
 zinit ice wait silent
 zinit light zsh-users/zsh-completions

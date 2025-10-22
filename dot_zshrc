@@ -163,7 +163,8 @@ zinit snippet OMZP::gradle
 zinit ice wait silent
 zinit snippet OMZP::gnu-utils
 
-# lazyload kubectl -- 'source <(kubectl completion zsh)'
+export SDKMAN_DIR="$HOME/.sdkman"
+lazyload sdk -- 'source "$SDKMAN_DIR/bin/sdkman-init.sh"'
 
 zinit ice wait silent
 zinit snippet OMZP::sdk

@@ -13,7 +13,16 @@ alias brewload="brew bundle install --file ~/.local/share/chezmoi/Brewfile"
 alias brew-reverse-deps="brew uses --recursive --installed"
 
 # alias ls='gls -l --color=auto --group-directories-first --classify'
-alias ls='eza --all --long --group --group-directories-first --color=always'
+# Prefer eza; fallback to BSD/GNU ls differences
+if command_exists eza; then
+  alias ls='eza --all --long --group --group-directories-first --color=always'
+else
+  if [[ -n "$IS_MAC" ]]; then
+    alias ls='ls -G'
+  else
+    alias ls='ls --color=auto'
+  fi
+fi
 alias lz='eza -l'
 alias mounts='mount | column -t | sort'
 alias ports='netstat -tulanp'

@@ -10,4 +10,19 @@ export XDG_CONFIG_HOME=$HOME/.config
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_CACHE_HOME=$HOME/.cache
 
+# OS detection helpers (used across zsh configs)
+case "$(uname -s)" in
+	Darwin)
+		export ZSYS_OS=darwin
+		export IS_MAC=1
+		;;
+	Linux)
+		export ZSYS_OS=linux
+		export IS_LINUX=1
+		;;
+	*)
+		export ZSYS_OS=other
+		;;
+esac
+
 [[ -f ~/.zshenv.local ]] && source ~/.zshenv.local

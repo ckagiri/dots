@@ -6,7 +6,18 @@ function_exists() {
   (( $+functions[$1]))
 }
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew/Linuxbrew initialization (guarded)
+if [[ -n "$IS_MAC" && -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -n "$IS_LINUX" ]]; then
+  # Common Linuxbrew locations
+  for brew_prefix in /home/linuxbrew/.linuxbrew /opt/homebrew /usr/local; do
+    if [[ -x "$brew_prefix/bin/brew" ]]; then
+      eval "$("$brew_prefix/bin/brew" shellenv)"
+      break
+    fi
+  done
+fi
 # Force homebrew to the end
 # This prioritizes zsh's built-in completions which are usually very rich
 # Example: https://github.com/orgs/Homebrew/discussions/2797
@@ -88,7 +99,8 @@ source $DOTSPATH/zsh/fzf.zsh
 source $DOTSPATH/zsh/functions.zsh
 source $DOTSPATH/zsh/alias.zsh
 
-[[ "$OSTYPE" == darwin* ]] && source $DOTSPATH/zsh/macos.zsh
+[[ -n "$IS_MAC" ]] && source $DOTSPATH/zsh/macos.zsh
+[[ -n "$IS_LINUX" && -f $DOTSPATH/zsh/linux.zsh ]] && source $DOTSPATH/zsh/linux.zsh
 
 # Note that if a plugin is marked with `wait` it will be loaded asynchronously (deferred)
 # This means the following is possible:
@@ -189,7 +201,15 @@ source $DOTSPATH/zsh/highlight.zsh
 # This was discovered with the fzf-tab `build-fzf-tab-module`
 eval "$(zoxide init zsh)"
 
-eval "$(atuin init zsh --disable-up-arrow)"
+# Ensure local Atuin bin is on PATH, then init it.
+if [[ -d "$HOME/.atuin/bin" ]]; then
+  export PATH="$HOME/.atuin/bin:$PATH"
+fi
+
+if command -v atuin >/dev/null 2>&1; then
+  eval "$(atuin init zsh --disable-up-arrow)"
+fi
+
 eval "$(starship init zsh)"
 
 zinit ice wait silent
@@ -216,6 +236,11 @@ function br {
         return "$code"
     fi
 }
+
+# Ensure Atuin is on Ctrl-R in insert mode, if its widget exists.
+if (( $+widgets[atuin-search] )); then
+  bindkey -M viins '^R' atuin-search
+fi
 
 if [[ -f ~/.zsh.local ]]; then
   source ~/.zsh.local

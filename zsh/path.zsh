@@ -20,15 +20,18 @@ export TMUX_PLUGIN_MANAGER_PATH="$HOME/.tmux/plugins/"
 
 path=(
   ~/bin
-
   ${GOPATH}/bin
   ~/.local/bin
   ~/.cargo/bin
   ~/.cabal/bin
 
-  ~/Library/Application\ Support/JetBrains/Toolbox/scripts
+  # macOS only entries
+  ${IS_MAC:+$HOME/Library/Application\ Support/JetBrains/Toolbox/scripts}
+  ${IS_MAC:+/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin}
 
-  /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin
+  # Linuxbrew typical path (added early so user tools override system; guarded)
+  ${IS_LINUX:+/home/linuxbrew/.linuxbrew/bin}
+  ${IS_LINUX:+/home/linuxbrew/.linuxbrew/sbin}
 
   "$path[@]"
 )
@@ -38,7 +41,7 @@ path=($^path(N))
 
 manpath=(
   /usr/local/share/man
-
+  ${IS_LINUX:+/home/linuxbrew/.linuxbrew/share/man}
   "$manpath[@]"
 )
 
@@ -46,6 +49,7 @@ manpath=($^manpath(N))
 
 infopath=(
   /usr/local/share/info
+  ${IS_LINUX:+/home/linuxbrew/.linuxbrew/share/info}
   "$infopath[@]"
 )
 
